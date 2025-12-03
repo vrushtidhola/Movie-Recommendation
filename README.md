@@ -1,62 +1,64 @@
-🎬 Movie-Recommendation – Full-Stack Application (React + Spring Boot)
+# 🎬 MovieVerse – Full-Stack Application (React + Spring Boot)
 
-A modern full-stack web application built using React (frontend) and Spring Boot (backend).
+A modern full-stack web application built using **React (frontend)** and **Spring Boot (backend)**.  
 This project includes user authentication, movie management, reviews, and recommendation features.
 
+---
+
+## 📁 Project Structure
+
+```bash
 movieverse-app/
 │
-├── frontend/                 # React UI
-│   ├── src/
+├── frontend/                       # React App (UI)
 │   ├── public/
-│   └── package.json
-│
-├── backend/                  # Spring Boot API
 │   ├── src/
-│   ├── pom.xml
-│   └── ...
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── context/
+│   │   ├── services/               # Axios API calls
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── package.json
+│   └── vite.config.js
 │
+├── backend/                        # Spring Boot API
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/movieverse/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── model/
+│   │   │   │   ├── repository/
+│   │   │   │   └── MovieVerseApplication.java
+│   │   │   └── resources/
+│   │   │       ├── application.properties
+│   │   │       └── static/
+│   ├── pom.xml
+│   └── mvnw
+│
+├── .gitignore
 ├── README.md
-└── .gitignore
+└── LICENSE (optional)
+```
 
-**🚀 Tech Stack
-**
-**Frontend**
-React (Vite or CRA)
-Material UI
-Axios
-React Router
-Context API / Redux (optional)
-
-**Backend (Spring Boot)
-**
-Spring Boot 3+
-Spring Web
-Spring Data JPA
-Spring Security (if using auth)
-MySQL / PostgreSQL
-
-**🖥️ Frontend Setup (React)
-**cd frontend
-npm install
-npm run dev
+---
 
 
-**Frontend runs at:
-**
-http://localhost:5173
+## 🚀 Tech Stack
 
-**🛠️ Backend Setup (Spring Boot)
-**
-cd backend
-mvn spring-boot:run
+### **Frontend**
+- React (Vite or CRA)
+- Material UI
+- Axios
+- React Router
 
+### **Backend (Spring Boot)**
+- Spring Boot 3+
+- Spring Web
+- Spring Data JPA
+- MySQL / PostgreSQL
 
-OR build JAR:
-
-mvn clean install
-java -jar target/*.jar
-
-
-**Backend runs at:
-**
-http://localhost:8080
+---
