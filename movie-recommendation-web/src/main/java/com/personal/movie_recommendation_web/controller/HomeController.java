@@ -1,0 +1,16 @@
+package com.personal.movie_recommendation_web.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HomeController {
+
+    @GetMapping("/")
+    public String greet()
+    {
+        System.out.println("calling method");
+        return "Hello";
+    }
+}
