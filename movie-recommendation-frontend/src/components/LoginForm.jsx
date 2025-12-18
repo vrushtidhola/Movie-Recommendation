@@ -11,6 +11,8 @@ const LoginForm = ({ onSwitch }) => {
     try {
       const res = await axios.post("http://localhost:8080/api/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.userId);
+      
       alert("Login successful!");
       window.location.href = "/landing";
     } catch (err) {

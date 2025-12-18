@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @EnableAutoConfiguration(exclude = {
         org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class
 })
-
 class MovieRecommendationWebApplicationTests {
 
 	@Test
