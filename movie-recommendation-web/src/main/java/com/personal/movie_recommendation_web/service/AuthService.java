@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.personal.movie_recommendation_web.dto.AuthResponse;
 import java.util.Optional;
 
 @Service
@@ -38,15 +38,21 @@ public class AuthService {
         String token = jwtUtil.generateToken(request.getEmail());
         return ResponseEntity.ok(new JwtResponse(token)); }
 
-    public String login(String email, String password) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) throw new RuntimeException("User not found");
+    public AuthResponse login(String email, String password) {
 
-        User user = userOpt.get();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
-        return jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        return new AuthResponse(
+                token,
+                user.getId(),
+                user.getEmail()
+        );
     }
 }

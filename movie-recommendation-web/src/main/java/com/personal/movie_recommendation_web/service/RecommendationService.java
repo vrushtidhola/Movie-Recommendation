@@ -3,6 +3,8 @@ package com.personal.movie_recommendation_web.service;
 import lombok.RequiredArgsConstructor;
 import com.personal.movie_recommendation_web.repository.RatingRepository;
 import org.springframework.stereotype.Service;
+import com.personal.movie_recommendation_web.model.User;
+import com.personal.movie_recommendation_web.repository.UserRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,24 +53,37 @@ public class RecommendationService {
     }
 
     public List<Map<String,Object>> recommendedByFriends(Long userId, int limit){
-        // 1. get friend user ids from social service
-        List<Long> friendIds = socialService.getFriends(userId); // implement socialService
-        if(friendIds.isEmpty()) return Collections.emptyList();
 
-        // 2. get ratings from friends, filter top rated
-        List<com.personal.movie_recommendation_web.model.Rating> friendRatings = ratingRepository.findByUserIdIn(friendIds);
+        // ✅ get ONLY ids for logic
+        List<Long> friendIds = socialService.getFriendIds(userId);
+
+        if (friendIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 2. get ratings from friends
+        List<com.personal.movie_recommendation_web.model.Rating> friendRatings =
+                ratingRepository.findByUserIdIn(friendIds);
+
         Map<Long, List<Long>> movieToFriends = new HashMap<>();
-        for(var r: friendRatings){
-            if(r.getStars() >=4 && Boolean.TRUE.equals(r.getVisibleToFriends())){
-                movieToFriends.computeIfAbsent(r.getMovieTmdbId(), k-> new ArrayList<>()).add(r.getUserId());
+
+        for (var r : friendRatings) {
+            if (r.getStars() >= 4 && Boolean.TRUE.equals(r.getVisibleToFriends())) {
+                movieToFriends
+                        .computeIfAbsent(r.getMovieTmdbId(), k -> new ArrayList<>())
+                        .add(r.getUserId());
             }
         }
 
-        // 3. rank by count of friends
+        // 3. rank by number of friends
         return movieToFriends.entrySet().stream()
-                .sorted((a,b)-> Integer.compare(b.getValue().size(), a.getValue().size()))
+                .sorted((a, b) -> Integer.compare(b.getValue().size(), a.getValue().size()))
                 .limit(limit)
-                .map(e-> Map.of("tmdbId", e.getKey(), "recommendedByCount", e.getValue().size(), "recommendedBy", e.getValue()))
-                .collect(Collectors.toList());
+                .map(e -> Map.of(
+                        "tmdbId", e.getKey(),
+                        "recommendedByCount", e.getValue().size(),
+                        "recommendedBy", e.getValue()
+                ))
+                .toList();
     }
 }

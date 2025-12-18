@@ -1,89 +1,155 @@
-import React, {useEffect, useState} from 'react';
-import { Box, AppBar, Toolbar, Typography, Grid, Card, CardMedia, CardContent, Chip, colors } from '@mui/material';
-import api from '../api/axios';
+import React, { useEffect, useState } from "react"; import { Grid, Card, CardContent, CardMedia, Typography, TextField, Button, Box, List, ListItem, ListItemText, } from "@mui/material"; import api from "../api/axios";
+export default function LandingPage() {
+  const userId = Number(localStorage.getItem("userId"));
 
-const posterBase = (path) => path ? `https://image.tmdb.org/t/p/w500${path}` : '/placeholder.png';
+  const [movies, setMovies] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [addFriendEmail, setAddFriendEmail] = useState("");
 
-export default function LandingPage(){
-  const [trending, setTrending] = useState([]);
-  const [personal, setPersonal] = useState([]);
-  const [friendsRec, setFriendsRec] = useState([]);
+  useEffect(() => {
+    loadTrendingMovies();
+    loadFriends();
+  }, []);
 
-  useEffect(()=>{
-    api.get('/movies/trending').then(r => setTrending(r.data.results || []));
-    // personal recommendations: backend returns list of {tmdbId, title, thumbnail}
-    api.get('/recommend/personal/1').then(r => setPersonal(r.data)).catch(()=>setPersonal([]));
-    api.get('/recommend/friends/1').then(r => {
-      // result contains tmdbId + recommendedByCount
-      const ids = r.data.map(x => x.tmdbId);
-      // fetch details for these IDs (backend has movie details endpoint)
-      Promise.all(ids.slice(0,8).map(id => api.get(`/movies/${id}`))).then(res=> {
-        setFriendsRec(res.map(x=> x.data));
-      }).catch(()=> setFriendsRec([]));
-    }).catch(()=>setFriendsRec([]));
-  },[]);
+  const loadTrendingMovies = () => {
+    api.get("/movies/trending").then((res) => {
+      setMovies(res.data.results || []);
+    });
+  };
+
+  const loadFriends = () => {
+    api.get(`/friends/${userId}`).then((res) => {
+      setFriends(res.data || []);
+    });
+  };
+
+  const handleAddFriend = () => {
+    if (!addFriendEmail.trim()) return alert("Enter friend email");
+
+    api.post("/friends/add", { userId, friendEmail: addFriendEmail }).then(() => {
+      setAddFriendEmail("");
+      loadFriends();
+    });
+  };
 
   return (
-    <Box sx={{ bgcolor:'#040404', minHeight:'100vh', color:'white' }}>
-      <AppBar position="static" sx={{ bgcolor:'#050505' }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow:1 }}>MovieMate</Typography>
-        </Toolbar>
-      </AppBar>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundColor: "#0f0f0f",
+        color: "#fff",
+        p: 4,
+      }}
+    >
+      <Typography variant="h4" sx={{ mb: 3 }}>
+        🎬 MovieVerse Dashboard
+      </Typography>
 
-      <Box sx={{ p:4 }}>
-        <Typography variant="h3" gutterBottom>Welcome to Movie Recommendations</Typography>
+      <Box sx={{ display: "flex", gap: 4, mb: 5 }}>
+        {/* ADD FRIEND */}
+        <Box
+          sx={{
+            backgroundColor: "#1e1e1e",
+            p: 3,
+            borderRadius: 3,
+            width: "300px",
+          }}
+        >
+          <Typography variant="h6">➕ Add Friend</Typography>
 
-        <Typography variant="h5" sx={{ mt:4, mb:1 }}>Trending Movies</Typography>
-        <Grid container spacing={2}>
-          {trending.slice(0,8).map(m => (
-            <Grid item xs={6} sm={3} key={m.id}>
-              <Card sx={{ bgcolor:'#ffff' }}>
-                <CardMedia component="img" height="280" image={posterBase(m.poster_path)} />
-                <CardContent sx={{ bgcolor:'#0d0d0d' }}>
-                <Typography variant="subtitle1" sx={{ color: '#fff' }}>
-                  {m.title}
-                  </Typography>
-                  <Typography variant="caption" color="gold">⭐ {m.vote_average}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+          <TextField
+            fullWidth
+            label="Enter Friend Email"
+            value={addFriendEmail}
+            onChange={(e) => setAddFriendEmail(e.target.value)}
+            sx={{
+              mt: 2,
+              input: { color: "#fff" },
+              label: { color: "#bbb" },
+              "& label.Mui-focused": { color: "#90caf9" },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: "#555" },
+                "&:hover fieldset": { borderColor: "#888" },
+                "&.Mui-focused fieldset": { borderColor: "#90caf9" },
+              },
+            }}
+          />
 
-        <Typography variant="h5" sx={{ mt:5, mb:1 }}>Personalized Recommendations</Typography>
-        <Grid container spacing={2}>
-          {personal.map((m, i) => (
-            <Grid item xs={6} sm={3} key={i}>
-              <Card sx={{ bgcolor:'#0d0d0d' }}>
-                <CardMedia component="img" height="280" image={m.thumbnail || posterBase(m.poster_path)} />
-                <CardContent>
-                <Typography variant="subtitle1" sx={{ color: '#fff' }}>
-                  {m.title}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+          <Button
+            fullWidth
+            sx={{
+              mt: 2,
+              background: "linear-gradient(45deg, #2196f3, #21cbf3)",
+              fontWeight: "bold",
+            }}
+            variant="contained"
+            onClick={handleAddFriend}
+          >
+            Add Friend
+          </Button>
+        </Box>
 
-        <Typography variant="h5" sx={{ mt:5, mb:1 }}>Friends' Recommendations</Typography>
-        <Grid container spacing={2}>
-          {friendsRec.map(m => (
-            <Grid item xs={6} sm={3} key={m.id}>
-              <Card sx={{ position:'relative', bgcolor:'#0d0d0d' }}>
-                <CardMedia component="img" height="280" image={posterBase(m.poster_path)} />
-                <Chip label="Recommended by friends" color="secondary" sx={{ position:'absolute', top:8, left:8 }} />
-                <CardContent>
-                <Typography variant="subtitle1" sx={{ color: '#fff' }}>
-                  {m.title}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        {/* FRIEND LIST */}
+        <Box
+          sx={{
+            backgroundColor: "#1e1e1e",
+            p: 3,
+            borderRadius: 3,
+            minWidth: "300px",
+          }}
+        >
+          <Typography variant="h6">👥 Your Friends</Typography>
+
+          {friends.length === 0 ? (
+            <Typography sx={{ mt: 2, opacity: 0.7 }}>
+              No friends added yet 😕
+            </Typography>
+          ) : (
+            <List>
+              {friends.map((f) => (
+                <ListItem key={f.id}>
+                  <ListItemText
+                    primary={f.username}
+                    secondary={f.email}
+                    primaryTypographyProps={{ color: "#fff" }}
+                    secondaryTypographyProps={{ color: "#aaa" }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </Box>
       </Box>
+
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        📈 Trending Movies
+      </Typography>
+
+      <Grid container spacing={3}>
+        {movies.map((movie) => (
+          <Grid item xs={12} sm={6} md={3} key={movie.id}>
+            <Card
+              sx={{
+                backgroundColor: "#1e1e1e",
+                color: "#fff",
+                borderRadius: 3,
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="350"
+                image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+              />
+              <CardContent>
+                <Typography variant="h6">{movie.title}</Typography>
+                <Typography sx={{ color: "#aaa" }}>
+                  ⭐ {movie.vote_average}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     </Box>
   );
 }

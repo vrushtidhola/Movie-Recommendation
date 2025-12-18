@@ -6,6 +6,7 @@ import com.personal.movie_recommendation_web.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.personal.movie_recommendation_web.dto.AuthResponse;
 
 import java.util.Map;
 
@@ -26,8 +27,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
-        String token = authService.login(request.get("email"), request.get("password"));
-        return ResponseEntity.ok(Map.of("token", token));
+    public ResponseEntity<AuthResponse> login(
+            @RequestBody Map<String, String> request
+    ) {
+        AuthResponse response = authService.login(
+                request.get("email"),
+                request.get("password")
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

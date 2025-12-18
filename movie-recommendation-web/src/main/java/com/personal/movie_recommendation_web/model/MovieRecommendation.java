@@ -1,33 +1,27 @@
 package com.personal.movie_recommendation_web.model;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "movie_recommendations")
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MovieRecommendation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;   // recommender
-    private Long friendId; // receiver
-    private String movieId;
-
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    public void setUserId(Long userId) {
-        this.userId=userId;
+    private Long userId;
+    private Long friendId;
+    private String movieName;
+    public MovieRecommendation(Long userId, Long friendId, String movieName) {
+        this.userId = userId;
+        this.friendId = friendId;
+        this.movieName = movieName;
     }
 
-    public void setFriendId(Long friendId) {
-        this.friendId=friendId;
-    }
-
-    public void setMovieId(String movieId) {
-        this.movieId=movieId;
-    }
 }
