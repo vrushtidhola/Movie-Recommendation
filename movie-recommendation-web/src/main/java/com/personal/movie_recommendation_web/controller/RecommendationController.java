@@ -2,24 +2,28 @@ package com.personal.movie_recommendation_web.controller;
 
 import lombok.RequiredArgsConstructor;
 import com.personal.movie_recommendation_web.service.RecommendationService;
+import com.personal.movie_recommendation_web.repository.MovieRecommendationRepository;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import com.personal.movie_recommendation_web.model.MovieRecommendation;
+import org.springframework.http.ResponseEntity;
 
 @RestController
-@RequestMapping("/api/recommend")
+@RequestMapping("/api/recommendations")
 @RequiredArgsConstructor
+@CrossOrigin
 public class RecommendationController {
-    private final RecommendationService recommendationService;
 
-    // returns list of TMDB ids + optional recommendedBy field
-    @GetMapping("/personal/{userId}")
-    public List<Map<String,Object>> personal(@PathVariable Long userId){
-        return recommendationService.personalRecommendations(userId, 20);
+    private final MovieRecommendationRepository repo;
+
+    @PostMapping("/add")
+    public ResponseEntity<?> recommend(@RequestBody MovieRecommendation req) {
+        return ResponseEntity.ok(repo.save(req));
     }
 
-    @GetMapping("/friends/{userId}")
-    public List<Map<String,Object>> friends(@PathVariable Long userId){
-        return recommendationService.recommendedByFriends(userId, 20);
+    @GetMapping("/for-user/{userId}")
+    public List<MovieRecommendation> getForUser(@PathVariable Long userId) {
+        return repo.findByFriendId(userId);
     }
 }

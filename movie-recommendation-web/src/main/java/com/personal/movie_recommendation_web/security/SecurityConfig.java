@@ -43,10 +43,9 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
                         // ✅ allow login & signup
-                        .requestMatchers("/api/auth/**").permitAll()
-
-                        // 🔒 everything else protected
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/auth/**", "/api/movies/trending"
+                        ).permitAll()
+                        .anyRequest().permitAll()
                 )
 
                 // ✅ JWT filter AFTER CORS

@@ -17,11 +17,21 @@ public class MovieRecommendation {
 
     private Long userId;
     private Long friendId;
-    private String movieName;
-    public MovieRecommendation(Long userId, Long friendId, String movieName) {
+    private String movieTitle;
+    private Integer rating;
+    private String comment;
+    @Column(name = "movie_tmdb_id")
+    private Long movieTmdbId;   // ✅ REQUIRED
+
+    private Long createdAt;
+
+    public MovieRecommendation(Long userId, Long friendId, String movieTitle,Integer rating,String comment,Long createdAt) {
         this.userId = userId;
         this.friendId = friendId;
-        this.movieName = movieName;
+        this.movieTitle = movieTitle;
+        this.rating=rating;
+        this.comment=comment;
+        this.createdAt=createdAt;
     }
 
 }

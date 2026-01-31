@@ -4,16 +4,29 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="ratings")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Table(name = "ratings", schema = "recommandation")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Rating {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;   // FK to your user table (assumed managed elsewhere)
-    private Long movieTmdbId; // TMDB movie id
-    private Integer stars; // 1-5
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "movie_tmdb_id")
+    private Long movieTmdbId;
+
+    private Integer stars;
+
     private String review;
-    private Boolean visibleToFriends = true;
+
+    @Column(name = "visible_to_friends")
+    private Boolean visibleToFriends;
+
+    @Column(name = "created_at")
     private Long createdAt;
 }

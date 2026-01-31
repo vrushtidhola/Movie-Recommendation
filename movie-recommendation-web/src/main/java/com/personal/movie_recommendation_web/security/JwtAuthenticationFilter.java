@@ -16,11 +16,12 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
-    private MyUserDetailsService userDetailsService;  // Implement your user detail service
+    private MyUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -28,6 +29,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // ✅ SKIP JWT FOR PUBLIC ENDPOINTS
+        if (
+                path.startsWith("/api/auth") ||
+                        path.equals("/api/movies/trending") ||
+                        request.getMethod().equals("OPTIONS")
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // ---------------- JWT LOGIC ----------------
 
         String authHeader = request.getHeader("Authorization");
 
@@ -53,7 +68,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 userDetails.getAuthorities()
                         );
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

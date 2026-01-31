@@ -13,6 +13,9 @@ public class TmdbService {
 
     public TmdbService(@Value("${tmdb.base.url}") String baseUrl,
                        @Value("${tmdb.api.key}") String apiKey) {
+        System.out.println("TMDB BASE URL = " + baseUrl);
+        System.out.println("TMDB API KEY LOADED = " + (apiKey != null));
+
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
         this.apiKey = apiKey;
     }

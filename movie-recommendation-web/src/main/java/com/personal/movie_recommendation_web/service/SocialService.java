@@ -64,14 +64,21 @@ public class SocialService {
     }
 
     // ✅ Recommend movie to friend
-    public MovieRecommendation recommendMovie(Long userId, Long friendId, String movieId) {
+    public MovieRecommendation recommendMovie(Long userId, Long friendId, String movieTitle) {
+
         if (!isFriend(userId, friendId)) {
             throw new IllegalStateException("You can recommend movies only to friends.");
         }
 
-        MovieRecommendation rec = new MovieRecommendation(userId, friendId, movieId);
+        MovieRecommendation rec = new MovieRecommendation();
+        rec.setUserId(userId);
+        rec.setFriendId(friendId);
+        rec.setMovieTitle(movieTitle);
+        rec.setCreatedAt(System.currentTimeMillis());
+
         return movieRecommendationRepository.save(rec);
     }
+
 
     public List<MovieRecommendation> getMoviesRecommendedToUser(Long userId) {
         return movieRecommendationRepository.findByFriendId(userId);
