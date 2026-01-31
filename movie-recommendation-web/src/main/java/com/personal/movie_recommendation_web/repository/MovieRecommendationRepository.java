@@ -8,4 +8,6 @@ import java.util.List;
 public interface MovieRecommendationRepository extends JpaRepository<MovieRecommendation, Long> {
     List<MovieRecommendation> findByFriendId(Long friendId);
     List<MovieRecommendation> findByUserId(Long userId);
+    List<MovieRecommendation> findByFriendIdOrderByCreatedAtDesc(Long userId);
+
 }
